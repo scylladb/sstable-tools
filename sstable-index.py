@@ -11,9 +11,7 @@ args = cmdline_parser.parse_args()
 
 for index_file in args.index_file:
 
-  f = open(index_file, 'rb')
-  data = f.read()
-  f.close()
+  data = open(index_file, 'rb').read()
 
   offset = 0
   size = len(data)

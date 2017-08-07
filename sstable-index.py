@@ -6,6 +6,7 @@ import struct
 
 cmdline_parser = argparse.ArgumentParser()
 cmdline_parser.add_argument('index_file', nargs='+', help='index file to parse')
+cmdline_parser.add_argument('--summary', action='store_true', help='generate a summary instead of full output')
 
 args = cmdline_parser.parse_args()
 
@@ -25,7 +26,28 @@ class FullReport:
     def report_end(self, partitions):
         print('Total partitions:\t\t\t{}'.format(partitions))
 
+class SummaryReport:
+    def report_file(self, file):
+        self.file = file
+    def begin_entries(self):
+        pass
+    def report_partition_start(self, key, position, promoted_length):
+        self.key = key
+        self.position = position
+        self.promoted_length = promoted_length
+    def report_promoted_start(self, deletion_time, timestamp, entries_count):
+        pass
+    def report_promoted_entry(self, start, end, entry_offset, width):
+        pass
+    def report_partition_end(self):
+        print('{:12} {:9} {} {}'.format(self.position, self.promoted_length, binascii.hexlify(self.key), self.file))
+    def report_end(self, partitions):
+        pass
+    
+        
 reporter = FullReport()
+if args.summary:
+    reporter = SummaryReport()
 
 for index_file in args.index_file:
   reporter.report_file(index_file)

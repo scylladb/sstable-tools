@@ -5,21 +5,23 @@ import binascii
 import struct
 
 cmdline_parser = argparse.ArgumentParser()
-cmdline_parser.add_argument('index_file', help='index file to parse')
+cmdline_parser.add_argument('index_file', nargs='+', help='index file to parse')
 
 args = cmdline_parser.parse_args()
 
-f = open(args.index_file, 'rb')
-data = f.read()
-f.close()
+for index_file in args.index_file:
 
-offset = 0
-size = len(data)
+  f = open(index_file, 'rb')
+  data = f.read()
+  f.close()
 
-print('Index entries:')
-partitions = 0
+  offset = 0
+  size = len(data)
 
-while offset < size:
+  print('Index entries:')
+  partitions = 0
+
+  while offset < size:
     partitions += 1
 
     key_length = struct.unpack_from('>h', data, offset)[0]
@@ -52,4 +54,4 @@ while offset < size:
             print('\t\tStart:\t{}\n\t\tEnd:\t{}\n\t\tOffset:\t{}\n\t\tLength:\t{}\n'.format(binascii.hexlify(start), binascii.hexlify(end), entry_offset, width))
     print('')
 
-print('Total partitions:\t\t\t{}'.format(partitions))
+  print('Total partitions:\t\t\t{}'.format(partitions))

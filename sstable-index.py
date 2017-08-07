@@ -10,6 +10,7 @@ cmdline_parser.add_argument('index_file', nargs='+', help='index file to parse')
 args = cmdline_parser.parse_args()
 
 for index_file in args.index_file:
+  print('Parsing {}'.format(index_file)
 
   data = open(index_file, 'rb').read()
 

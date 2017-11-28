@@ -8,6 +8,8 @@ cmdline_parser = argparse.ArgumentParser()
 cmdline_parser.add_argument('index_file', nargs='+', help='index file to parse')
 cmdline_parser.add_argument('--summary', action='store_true', help='generate a summary instead of full output')
 cmdline_parser.add_argument('--partition-size-threshold', type=int, default=-2, help='report on partitions this size or larger')
+cmdline_parser.add_argument('--ignore-missing', action='store_true', default=False,
+                            help='ignore missing files (useful when running on live data that can be compacted)')
 
 args = cmdline_parser.parse_args()
 
@@ -71,7 +73,16 @@ if args.summary:
 for index_file in args.index_file:
   reporter.report_file(index_file)
 
-  data = open(index_file, 'rb').read()
+  try:
+    file = open(index_file, 'rb')
+  except:
+    if args.ignore_missing:
+        print('File {} missing, possible compacted'.format(index_file))
+        continue
+    else:
+        raise
+      
+  data = file.read()
 
   offset = 0
   size = len(data)

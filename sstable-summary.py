@@ -5,11 +5,11 @@ import binascii
 import struct
 
 cmdline_parser = argparse.ArgumentParser()
-cmdline_parser.add_argument('index_file', help='index file to parse')
+cmdline_parser.add_argument('summary_file', help='summary file to parse')
 
 args = cmdline_parser.parse_args()
 
-f = open(args.index_file, 'rb')
+f = open(args.summary_file, 'rb')
 data = f.read()
 f.close()
 

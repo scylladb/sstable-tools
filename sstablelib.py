@@ -30,12 +30,28 @@ class Stream:
         self.offset += self.size[typ]
         return val
 
+    def bool(self):
+        return self.read('?')
+    def int8(self):
+        return self.read('b')
+    def uint8(self):
+        return self.read('B')
     def int16(self):
         return self.read('h')
+    def uint16(self):
+        return self.read('H')
     def int32(self):
         return self.read('i')
+    def uint32(self):
+        return self.read('I')
     def int64(self):
         return self.read('q')
+    def uint64(self):
+        return self.read('Q')
+    def float(self):
+        return self.read('f')
+    def double(self):
+        return self.read('d')
     def bytes16(self):
         len = self.int16()
         val = self.data[self.offset:self.offset + len]

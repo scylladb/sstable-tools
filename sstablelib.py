@@ -18,9 +18,9 @@ class Stream:
         'd': 8, # double
     }
 
-    def __init__(self, data):
+    def __init__(self, data, offset=0):
         self.data = data
-        self.offset = 0
+        self.offset = offset
 
     def read(self, typ):
         try:

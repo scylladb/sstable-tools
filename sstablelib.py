@@ -70,3 +70,7 @@ class Stream:
         return {keytype(self): valuetype(self) for _ in range(self.int32())}
     def array32(self, valuetype):
         return [valuetype(self) for _ in range(self.int32())]
+    def tuple(self, *member_types):
+        return (mt(self) for mt in member_types)
+    def struct(self, *members):
+        return {member_name: member_type(self) for member_name, member_type in members}

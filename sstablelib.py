@@ -74,3 +74,8 @@ class Stream:
         return (mt(self) for mt in member_types)
     def struct(self, *members):
         return {member_name: member_type(self) for member_name, member_type in members}
+    @staticmethod
+    def instantiate(template_type, *args):
+        def instanciated_type(stream):
+            return template_type(stream, *args)
+        return instanciated_type

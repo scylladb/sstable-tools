@@ -79,3 +79,7 @@ class Stream:
         def instanciated_type(stream):
             return template_type(stream, *args)
         return instanciated_type
+
+
+def parse(stream, schema):
+    return {name: typ(stream) for name, typ in schema}

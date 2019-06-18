@@ -64,4 +64,4 @@ class Stream:
     def map32(self, keytype=string16, valuetype=string16):
         return {keytype(self): valuetype(self) for _ in range(self.int32())}
     def array32(self, valuetype):
-        return [valuetype() for _ in range(self.int32())]
+        return [valuetype(self) for _ in range(self.int32())]

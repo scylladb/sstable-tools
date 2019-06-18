@@ -21,7 +21,7 @@ for fname in args.compressioninfo_file:
     options = s.map32()
     chunk_size = s.int32()
     data_len = s.int64()
-    offsets = s.array32(s.int64)
+    offsets = s.array32(sstablelib.Stream.int64)
     end = offsets[1:] + [offsets[-1]]
     diffs = list(itertools.starmap(operator.__sub__, zip(end, offsets)))
     avg_chunk = int(statistics.mean(diffs[:-1]))

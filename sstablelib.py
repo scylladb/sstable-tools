@@ -1,21 +1,41 @@
 import struct
 
 class Stream:
+    size = {
+        'c': 1, # char
+        'b': 1, # signed char (int8)
+        'B': 1, # unsigned char (uint8)
+        '?': 1, # bool
+        'h': 2, # short (int16)
+        'H': 2, # unsigned short (uint16)
+        'i': 4, # int (int32)
+        'I': 4, # unsigned int (uint32)
+        'l': 4, # long (int32)
+        'l': 4, # unsigned long (int32)
+        'q': 8, # long long (int64)
+        'Q': 8, # unsigned long long (uint64)
+        'f': 4, # float
+        'd': 8, # double
+    }
+
     def __init__(self, data):
         self.data = data
         self.offset = 0
+
+    def read(self, typ):
+        try:
+            (val,) = struct.unpack_from('>{}'.format(typ), self.data, self.offset)
+        except Exception as e:
+            raise ValueError('Failed to read type `{}\' from stream at offset {}: {}'.format(typ, e, self.offset))
+        self.offset += self.size[typ]
+        return val
+
     def int16(self):
-        (val,) = struct.unpack_from('>h', self.data, self.offset)
-        self.offset += 2
-        return val
+        return self.read('h')
     def int32(self):
-        (val,) = struct.unpack_from('>l', self.data, self.offset)
-        self.offset += 4
-        return val
+        return self.read('i')
     def int64(self):
-        (val,) = struct.unpack_from('>q', self.data, self.offset)
-        self.offset += 8
-        return val
+        return self.read('q')
     def bytes16(self):
         len = self.int16()
         val = self.data[self.offset:self.offset + len]

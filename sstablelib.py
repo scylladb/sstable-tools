@@ -58,7 +58,12 @@ class Stream:
         self.offset += len
         return val
     def string16(self):
-        return self.bytes16().decode('utf-8')
+        buf = self.bytes16()
+        try:
+            return buf.decode('utf-8')
+        except UnicodeDecodeError:
+            # FIXME why are some strings unintelligible?
+            return 'INVALID(size={}, bytes={})'.format(len(buf), ''.join(map(lambda x: '{:02x}'.format(x), buf)))
     def map16(self, keytype=string16, valuetype=string16):
         return {self.keytype(): self.valuetype() for _ in range(self.int16())}
     def map32(self, keytype=string16, valuetype=string16):

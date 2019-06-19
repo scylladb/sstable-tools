@@ -3,7 +3,7 @@
 import argparse
 import binascii
 import struct
-import sstablelib
+import sstable_tools.sstablelib as sstablelib
 import itertools
 import operator
 import statistics

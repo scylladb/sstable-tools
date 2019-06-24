@@ -1,4 +1,5 @@
 import struct
+import sys
 
 class Stream:
     size = {
@@ -63,7 +64,11 @@ class Stream:
             return buf.decode('utf-8')
         except UnicodeDecodeError:
             # FIXME why are some strings unintelligible?
-            return 'INVALID(size={}, bytes={})'.format(len(buf), ''.join(map(lambda x: '{:02x}'.format(x), buf)))
+            # FIXME Remove this when we finally transition to Python3
+            if sys.version_info[0] == 2:
+                return 'INVALID(size={}, bytes={})'.format(len(buf), ''.join(map(lambda x: '{:02x}'.format(ord(x)), buf)))
+            else:
+                return 'INVALID(size={}, bytes={})'.format(len(buf), ''.join(map(lambda x: '{:02x}'.format(x), buf)))
     def map16(self, keytype=string16, valuetype=string16):
         return {self.keytype(): self.valuetype() for _ in range(self.int16())}
     def map32(self, keytype=string16, valuetype=string16):

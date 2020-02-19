@@ -63,6 +63,8 @@ class Stream:
         return val
     def bytes16(self):
         return self.bytes(Stream.uint16)
+    def bytes32(self):
+        return self.bytes(Stream.uint32)
     def string(self, len_type):
         buf = self.bytes(len_type)
         try:
@@ -76,6 +78,8 @@ class Stream:
                 return 'INVALID(size={}, bytes={})'.format(len(buf), ''.join(map(lambda x: '{:02x}'.format(x), buf)))
     def string16(self):
         return self.string(Stream.uint16)
+    def string32(self):
+        return self.string(Stream.uint32)
     def map16(self, keytype=string16, valuetype=string16):
         return {self.keytype(): self.valuetype() for _ in range(self.int16())}
     def map32(self, keytype=string16, valuetype=string16):

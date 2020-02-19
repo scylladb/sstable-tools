@@ -56,13 +56,15 @@ class Stream:
         return self.read('f')
     def double(self):
         return self.read('d')
-    def bytes16(self):
-        len = self.int16()
+    def bytes(self, len_type):
+        len = len_type(self)
         val = self.data[self.offset:self.offset + len]
         self.offset += len
         return val
-    def string16(self):
-        buf = self.bytes16()
+    def bytes16(self):
+        return self.bytes(Stream.uint16)
+    def string(self, len_type):
+        buf = self.bytes(len_type)
         try:
             return buf.decode('utf-8')
         except UnicodeDecodeError:
@@ -72,6 +74,8 @@ class Stream:
                 return 'INVALID(size={}, bytes={})'.format(len(buf), ''.join(map(lambda x: '{:02x}'.format(ord(x)), buf)))
             else:
                 return 'INVALID(size={}, bytes={})'.format(len(buf), ''.join(map(lambda x: '{:02x}'.format(x), buf)))
+    def string16(self):
+        return self.string(Stream.uint16)
     def map16(self, keytype=string16, valuetype=string16):
         return {self.keytype(): self.valuetype() for _ in range(self.int16())}
     def map32(self, keytype=string16, valuetype=string16):

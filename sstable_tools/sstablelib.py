@@ -23,6 +23,9 @@ class Stream:
         self.data = data
         self.offset = offset
 
+    def skip(self, n):
+        self.offset += n
+
     def read(self, typ):
         try:
             (val,) = struct.unpack_from('>{}'.format(typ), self.data, self.offset)

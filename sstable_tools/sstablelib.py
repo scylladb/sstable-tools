@@ -90,6 +90,19 @@ class Stream:
         return (mt(self) for mt in member_types)
     def struct(self, *members):
         return {member_name: member_type(self) for member_name, member_type in members}
+    def set_of_tagged_union(self, tag_type, *members):
+        members_by_keys = {k: (n, t) for k, n, t in members}
+        value = {}
+        for _ in range(tag_type(self)):
+            key = tag_type(self)
+            size = self.uint32()
+            if key in members_by_keys:
+                name, typ = members_by_keys[key]
+                value[name] = typ(self)
+                #TODO: check we haven't read more than size
+            else:
+                self.skip(size)
+        return value
     @staticmethod
     def instantiate(template_type, *args):
         def instanciated_type(stream):

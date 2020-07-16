@@ -1,4 +1,3 @@
-import struct
 import sstable_tools.sstablelib as sstablelib
 
 

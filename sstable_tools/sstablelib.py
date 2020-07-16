@@ -23,6 +23,9 @@ class Stream:
         self.data = data
         self.offset = offset
 
+    def skip(self, n):
+        self.offset += n
+
     def read(self, typ):
         try:
             (val,) = struct.unpack_from('>{}'.format(typ), self.data, self.offset)
@@ -53,13 +56,17 @@ class Stream:
         return self.read('f')
     def double(self):
         return self.read('d')
-    def bytes16(self):
-        len = self.int16()
+    def bytes(self, len_type):
+        len = len_type(self)
         val = self.data[self.offset:self.offset + len]
         self.offset += len
         return val
-    def string16(self):
-        buf = self.bytes16()
+    def bytes16(self):
+        return self.bytes(Stream.uint16)
+    def bytes32(self):
+        return self.bytes(Stream.uint32)
+    def string(self, len_type):
+        buf = self.bytes(len_type)
         try:
             return buf.decode('utf-8')
         except UnicodeDecodeError:
@@ -69,6 +76,10 @@ class Stream:
                 return 'INVALID(size={}, bytes={})'.format(len(buf), ''.join(map(lambda x: '{:02x}'.format(ord(x)), buf)))
             else:
                 return 'INVALID(size={}, bytes={})'.format(len(buf), ''.join(map(lambda x: '{:02x}'.format(x), buf)))
+    def string16(self):
+        return self.string(Stream.uint16)
+    def string32(self):
+        return self.string(Stream.uint32)
     def map16(self, keytype=string16, valuetype=string16):
         return {self.keytype(): self.valuetype() for _ in range(self.int16())}
     def map32(self, keytype=string16, valuetype=string16):
@@ -79,6 +90,19 @@ class Stream:
         return (mt(self) for mt in member_types)
     def struct(self, *members):
         return {member_name: member_type(self) for member_name, member_type in members}
+    def set_of_tagged_union(self, tag_type, *members):
+        members_by_keys = {k: (n, t) for k, n, t in members}
+        value = {}
+        for _ in range(tag_type(self)):
+            key = tag_type(self)
+            size = self.uint32()
+            if key in members_by_keys:
+                name, typ = members_by_keys[key]
+                value[name] = typ(self)
+                #TODO: check we haven't read more than size
+            else:
+                self.skip(size)
+        return value
     @staticmethod
     def instantiate(template_type, *args):
         def instanciated_type(stream):
